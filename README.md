@@ -21,8 +21,11 @@ Note: Sensitive identifiers like specific hostnames and MAC addresses have been 
 
 🛠 Tools Used
 Nmap (Network Mapper): Used for network discovery and security auditing.
+
 Wireshark: Used for network packet analysis to verify scan traffic.
+
 Kali Linux: The operating system environment used for execution.
+
 Terminal: Command-line interface for running tools.
 
 
