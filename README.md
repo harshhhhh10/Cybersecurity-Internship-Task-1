@@ -1,11 +1,5 @@
 🕵️ Network Port Scan – Task 1
-
-
 This project documents a TCP SYN scan performed on a local home network. The goal was to discover active devices and open TCP ports using Nmap, interpret the results, and identify potential security risks.
-
-
-
-
 
 Key Objectives:
 
@@ -15,39 +9,22 @@ Analyze the security implications of the findings.
 Verify the scan traffic using Wireshark.
 Note: Sensitive identifiers like specific hostnames and MAC addresses have been redacted from screenshots to protect privacy.
 
-
-
-
-
 🛠 Tools Used
 Nmap (Network Mapper): Used for network discovery and security auditing.
-
 Wireshark: Used for network packet analysis to verify scan traffic.
-
 Kali Linux: The operating system environment used for execution.
-
 Terminal: Command-line interface for running tools.
-
-
-
-
 🌐 Networking Setup
 Before scanning, it was necessary to identify the current network range to ensure the target was correct.
 
-
 Command:
-
-bash
 
 ip a
 Finding:
 The output showed the machine's IP address:
-
 inet 192.168.1.39/24
 
 This indicated the machine is on a /24 subnet (Class C), meaning the scan target range was 192.168.1.0 to 192.168.1.255.
-
-
 
 🧪 Commands Executed
 The scan utilized the TCP SYN Scan (-sS). This technique is often referred to as "stealth" scanning because it does not complete the full TCP three-way handshake, making it faster and less likely to be logged by basic application logs.
@@ -69,17 +46,11 @@ sudo nmap -sS 192.168.1.0/24
 bash
 
 sudo nmap -sS 192.168.1.0/24 -oN nmap_result.txt
-(I used the -oN flag for normal output formatting, though redirection > also works).
-
 4. View Saved Results:
 
 bash
 
 cat nmap_result.txt
-
-
-
-
 📸 Screenshots
 Visual documentation of the process is located in the /screenshots folder:
 
@@ -89,10 +60,6 @@ Visual documentation of the process is located in the /screenshots folder:
 04_scan_results.png – Raw output showing discovered hosts and ports.
 05_saved_output.png – Verification of the saved text file.
 06_wireshark.png – Packet capture of the scan traffic.
-
-
-
-
 🔍 Scan Results Summary
 The scan targeted 256 possible IP addresses.
 
@@ -111,9 +78,6 @@ Notes
 192.168.1.33	80	open	http	Web Service
 192.168.1.41	62078	open	iphone-sync	Apple iPhone Sync Service
 
-
-
-
 🔐 Security Risk Analysis
 The analysis focused on the services exposed by the router (192.168.1.1) and mobile devices.
 
@@ -130,9 +94,6 @@ Recommendation: Force HTTPS (Port 443) for all administrative access.
 3. iPhone Sync Service (Port 62078):
 This port is standard for Apple devices for syncing with iTunes/Find My, but it does reveal the device type. While generally safe, closing unused ports is always best practice to reduce the attack surface.
 
-
-
-
 📷 Wireshark Packet Analysis
 To verify the behavior of the -sS scan, live traffic was captured in Wireshark.
 
@@ -148,9 +109,6 @@ SYN Packets: My machine sent SYN packets to target IPs.
 SYN/ACK Responses: Open ports replied with a SYN/ACK (inviting a connection).
 RST Responses: Closed ports replied with an RST (Reset), refusing the connection.
 Nmap Behavior: Nmap immediately sent an RST to tear down the connection after receiving the SYN/ACK, confirming it did not complete the handshake.
-
-
-
 🧠 Key Learnings
 Subnetting: How to calculate the scan range using CIDR notation (/24).
 Scan Types: The difference between a full TCP connect scan and a SYN scan.
