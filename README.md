@@ -143,16 +143,6 @@ Cybersecurity-Internship-Task-1/
     ├── 05_saved_output.png
     └── 06_wireshark.png
 ```
-
----
-
-## 🏷️ Suggested GitHub Topics
-
-```
-nmap  port-scanning  network-security  kali-linux  wireshark
-cybersecurity  ethical-hacking  tcp-syn-scan  network-recon  internship
-```
-
 ---
 
 > 🔒 *This scan was performed on a personal home network for educational purposes only as part of the Elevate Labs Cybersecurity Internship.*
