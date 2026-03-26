@@ -1,117 +1,158 @@
-🕵️ Network Port Scan – Task 1
-This project documents a TCP SYN scan performed on a local home network. The goal was to discover active devices and open TCP ports using Nmap, interpret the results, and identify potential security risks.
+# 🔍 Task 1 – Network Port Scanning with Nmap
 
-Key Objectives:
+![Internship](https://img.shields.io/badge/Elevate%20Labs-Cybersecurity%20Internship-blue?style=for-the-badge)
+![Tool](https://img.shields.io/badge/Tool-Nmap-4EAA25?style=for-the-badge&logo=linux&logoColor=white)
+![OS](https://img.shields.io/badge/OS-Kali%20Linux-557C94?style=for-the-badge&logo=kalilinux&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)
 
-Determine the live hosts on the local subnet.
-Identify open ports and running services.
-Analyze the security implications of the findings.
-Verify the scan traffic using Wireshark.
-Note: Sensitive identifiers like specific hostnames and MAC addresses have been redacted from screenshots to protect privacy.
+---
 
-🛠 Tools Used
-Nmap (Network Mapper): Used for network discovery and security auditing.
-Wireshark: Used for network packet analysis to verify scan traffic.
-Kali Linux: The operating system environment used for execution.
-Terminal: Command-line interface for running tools.
-🌐 Networking Setup
-Before scanning, it was necessary to identify the current network range to ensure the target was correct.
+## 📌 Objective
 
-Command:
+Perform a TCP SYN scan on a local home network to discover active devices and open ports using Nmap, analyze the results for potential security risks, and verify scan traffic using Wireshark.
 
+---
+
+## 🛠️ Tools Used
+
+| Tool | Purpose |
+|------|---------|
+| **Nmap** | Network discovery and port scanning |
+| **Wireshark** | Packet capture to verify SYN scan traffic |
+| **Kali Linux** | OS environment for execution |
+
+---
+
+## 🌐 Network Setup
+
+Before scanning, the local subnet was identified using:
+
+```bash
 ip a
-Finding:
-The output showed the machine's IP address:
-inet 192.168.1.39/24
+```
 
-This indicated the machine is on a /24 subnet (Class C), meaning the scan target range was 192.168.1.0 to 192.168.1.255.
+**Finding:** Machine IP was `192.168.1.39/24` — meaning the scan range was `192.168.1.0/24` (256 addresses).
 
-🧪 Commands Executed
-The scan utilized the TCP SYN Scan (-sS). This technique is often referred to as "stealth" scanning because it does not complete the full TCP three-way handshake, making it faster and less likely to be logged by basic application logs.
+---
 
-Note: The -sS scan requires root privileges to craft raw packets.
+## 🧪 Commands Used
 
-1. Verify Nmap Installation:
-
-bash
-
+```bash
+# 1. Verify Nmap installation
 nmap -v
-2. Execute TCP SYN Scan:
 
-bash
-
+# 2. Run TCP SYN scan on local subnet
 sudo nmap -sS 192.168.1.0/24
-3. Save Results to File:
 
-bash
-
+# 3. Save results to file
 sudo nmap -sS 192.168.1.0/24 -oN nmap_result.txt
-4. View Saved Results:
 
-bash
-
+# 4. View saved results
 cat nmap_result.txt
-📸 Screenshots
-Visual documentation of the process is located in the /screenshots folder:
+```
 
-01_nmap_install.png – Verification of Nmap installation.
-02_ip_address.png – Identification of local IP and subnet.
-03_scan_command.png – Execution of the SYN scan command.
-04_scan_results.png – Raw output showing discovered hosts and ports.
-05_saved_output.png – Verification of the saved text file.
-06_wireshark.png – Packet capture of the scan traffic.
-🔍 Scan Results Summary
-The scan targeted 256 possible IP addresses.
+> **Note:** `-sS` (SYN scan) requires root privileges to craft raw packets. It does not complete the full TCP three-way handshake, making it faster and less likely to be logged.
 
-Total Hosts Found: 10 hosts were "up".
-Findings: Multiple devices exposed management services.
-Discovered Ports Table
-IP Address
-Port
-State
-Service
-Notes
-192.168.1.1	21	open	ftp	File Transfer Protocol
-192.168.1.1	22	open	ssh	Secure Shell
-192.168.1.1	80	open	http	Web Server (Router Admin)
-192.168.1.1	443	open	https	Secure Web Server
-192.168.1.33	80	open	http	Web Service
-192.168.1.41	62078	open	iphone-sync	Apple iPhone Sync Service
+---
 
-🔐 Security Risk Analysis
-The analysis focused on the services exposed by the router (192.168.1.1) and mobile devices.
+## 📊 Scan Results Summary
 
-1. Insecure FTP Service (Port 21):
-The most significant finding was an open FTP port on the router. FTP (File Transfer Protocol) transmits data and credentials in plaintext by default.
+- **Total hosts scanned:** 256
+- **Active hosts found:** 10
 
-Risk: An attacker on the same network could sniff traffic to capture usernames and passwords.
-Recommendation: Disable FTP on the router interface if not in use. Switch to SFTP (Secure FTP) if file transfers are required.
-2. HTTP Management Interface (Port 80):
-The router's admin panel is accessible via HTTP.
+### Discovered Open Ports
 
-Risk: If credentials are entered over HTTP, they are sent unencrypted.
-Recommendation: Force HTTPS (Port 443) for all administrative access.
-3. iPhone Sync Service (Port 62078):
-This port is standard for Apple devices for syncing with iTunes/Find My, but it does reveal the device type. While generally safe, closing unused ports is always best practice to reduce the attack surface.
+| IP Address | Port | State | Service | Notes |
+|------------|------|-------|---------|-------|
+| 192.168.1.1 | 21 | open | FTP | ⚠️ Plaintext — credentials exposed |
+| 192.168.1.1 | 22 | open | SSH | ✅ Secure Shell |
+| 192.168.1.1 | 80 | open | HTTP | ⚠️ Unencrypted admin panel |
+| 192.168.1.1 | 443 | open | HTTPS | ✅ Secure web |
+| 192.168.1.33 | 80 | open | HTTP | Web service |
+| 192.168.1.41 | 62078 | open | iphone-sync | Apple device sync |
 
-📷 Wireshark Packet Analysis
-To verify the behavior of the -sS scan, live traffic was captured in Wireshark.
+---
 
-Filter Applied:
+## 🔐 Security Risk Analysis
 
-wireshark
+### ⚠️ FTP Open (Port 21)
+FTP transmits credentials in **plaintext** — anyone on the network can sniff them.
+- **Fix:** Disable FTP on the router; use SFTP if file transfers are needed.
 
+### ⚠️ HTTP Admin Panel (Port 80)
+Router admin interface accessible over unencrypted HTTP.
+- **Fix:** Force HTTPS (port 443) for all admin access.
+
+### ℹ️ iPhone Sync (Port 62078)
+Standard Apple sync port — low risk, but reveals device type.
+- **Fix:** Close if unused to reduce attack surface.
+
+---
+
+## 📦 Wireshark Packet Verification
+
+Scan traffic was captured in Wireshark using the filter:
+
+```
 tcp.flags.syn == 1
-Observations:
-The capture clearly demonstrated the SYN scan mechanics:
+```
 
-SYN Packets: My machine sent SYN packets to target IPs.
-SYN/ACK Responses: Open ports replied with a SYN/ACK (inviting a connection).
-RST Responses: Closed ports replied with an RST (Reset), refusing the connection.
-Nmap Behavior: Nmap immediately sent an RST to tear down the connection after receiving the SYN/ACK, confirming it did not complete the handshake.
-🧠 Key Learnings
-Subnetting: How to calculate the scan range using CIDR notation (/24).
-Scan Types: The difference between a full TCP connect scan and a SYN scan.
-Packet Mechanics: Visualizing the TCP handshake (SYN -> SYN/ACK -> RST).
-Service Identification: Mapping open ports to potential vulnerabilities (e.g., FTP vs. SFTP).
-Operational Security: The importance of redacting sensitive data in public reports.
+**Observations:**
+- **Open ports** replied with `SYN/ACK`
+- **Closed ports** replied with `RST`
+- **Nmap behavior:** Immediately sent `RST` after receiving `SYN/ACK` — confirming the half-open scan never completed the handshake
+
+---
+
+## 📸 Screenshots
+
+All screenshots are in the [`/screenshots`](./screenshots) folder:
+
+| File | Description |
+|------|-------------|
+| `01_nmap_install.png` | Nmap installation verification |
+| `02_ip_address.png` | Local IP and subnet identification |
+| `03_scan_command.png` | SYN scan command execution |
+| `04_scan_results.png` | Raw scan output |
+| `05_saved_output.png` | Saved results file |
+| `06_wireshark.png` | Wireshark packet capture |
+
+---
+
+## 🧠 Key Learnings
+
+- How to calculate scan range using CIDR notation (`/24`)
+- Difference between a full TCP connect scan (`-sT`) and a SYN scan (`-sS`)
+- Visualizing the TCP handshake: `SYN → SYN/ACK → RST`
+- Mapping open ports to real-world vulnerabilities (e.g., FTP vs SFTP)
+- Importance of redacting sensitive info (MACs, hostnames) in public reports
+
+---
+
+## 📁 Repository Structure
+
+```
+Cybersecurity-Internship-Task-1/
+├── README.md
+├── nmap_result.txt
+└── screenshots/
+    ├── 01_nmap_install.png
+    ├── 02_ip_address.png
+    ├── 03_scan_command.png
+    ├── 04_scan_results.png
+    ├── 05_saved_output.png
+    └── 06_wireshark.png
+```
+
+---
+
+## 🏷️ Suggested GitHub Topics
+
+```
+nmap  port-scanning  network-security  kali-linux  wireshark
+cybersecurity  ethical-hacking  tcp-syn-scan  network-recon  internship
+```
+
+---
+
+> 🔒 *This scan was performed on a personal home network for educational purposes only as part of the Elevate Labs Cybersecurity Internship.*
